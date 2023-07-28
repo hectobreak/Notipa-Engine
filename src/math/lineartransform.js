@@ -64,7 +64,7 @@ class LinearTransform {
     }
 
     recompute_matrix(){
-        if(type === LinearTransformType.TS){
+        if(this.#type === LinearTransformType.TS){
             let sx = this.#scale.x, sy = this.#scale.y, sz = this.#scale.z;
             let tx = this.#translation.x, ty = this.#translation.y, tz = this.#translation.z;
             this.#transform = [
@@ -73,7 +73,7 @@ class LinearTransform {
                 0,  0, sz, tz,
                 0,  0,  0,  1
             ];
-        } else if(type === LinearTransformType.TRS){
+        } else if(this.#type === LinearTransformType.TRS){
             let [r00, r01, r02, r10, r11, r12, r20, r21, r22] = this.#rotation.rotation_matrix;
             let sx = this.#scale.x, sy = this.#scale.y, sz = this.#scale.z;
             let tx = this.#translation.x, ty = this.#translation.y, tz = this.#translation.z;
@@ -83,7 +83,7 @@ class LinearTransform {
                 sx * r20, sy * r21, sz * r22, tz,
                        0,        0,        0,  1
             ];
-        } else if(type === LinearTransformType.SRT){
+        } else if(this.#type === LinearTransformType.SRT){
             let [r00, r01, r02, r10, r11, r12, r20, r21, r22] = this.#rotation.rotation_matrix;
             let sx = this.#scale.x, sy = this.#scale.y, sz = this.#scale.z;
             let tx = this.#translation.x, ty = this.#translation.y, tz = this.#translation.z;
