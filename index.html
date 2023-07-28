@@ -1,0 +1,49 @@
+<body></body>
+<script src="./src/security/assert.js"></script>
+<script src="./src/math/vector2d.js"></script>
+<script src="./src/math/vector3d.js"></script>
+<script src="./src/math/vector4d.js"></script>
+<script src="./src/math/lineartransform.js"></script>
+<script src="./src/core/shader.js"></script>
+<script src="./src/core/vertexshader.js"></script>
+<script src="./src/core/fragmentshader.js"></script>
+<script src="./src/core/component.js"></script>
+<script src="./src/core/sprite.js"></script>
+<script src="./src/core/screen.js"></script>
+<script src="./src/core/instance.js"></script>
+<script src="./src/core/engine.js"></script>
+<script>
+
+    let engine = new Engine(800, 600);
+
+    let test_instance = new Instance();
+    test_instance.component.add_component( Sprite.from_sprite_sheet(
+        "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
+        1,
+        2,
+        (sprite) => { sprite.center_origin() })
+    );
+
+    test_instance.position = new Vector3D(400, 300, 0);
+
+    test_instance.step = function(){
+        if(this.speed === undefined) this.speed = new Vector3D();
+        this.position = this.position.add(this.speed.scale(Engine.singleton.deltaTime));
+        this.speed = this.speed.add(new Vector3D(0, 500 * Engine.singleton.deltaTime))
+            .scale(Math.pow(0.97, Engine.singleton.deltaTime));
+        if(this.position.y > 550) {
+            this.position.y = 550 - 2 * (this.position.y - 550);
+            this.speed.y *= -1;
+            this.get_component(Sprite).image_index += 1;
+        }
+        let scaling = (this.speed.y * this.speed.y * 5e-7 + 1);
+        if(this.speed.y < 0) {
+            this.scale = new Vector3D(0.5 * scaling, 0.5 / scaling, 1);
+        } else {
+            this.scale = new Vector3D(0.5 / scaling, 0.5 * scaling, 1);
+        }
+    }
+
+    let test_instantiation = engine.instantiate(test_instance);
+
+</script>
