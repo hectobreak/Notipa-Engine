@@ -76,7 +76,7 @@ class Quaternion {
         return [col1.x, col2.x, col3.x, col1.y, col2.y, col3.y, col1.z, col2.z, col3.z];
     }
 
-    get copy(){
+    copy(){
         return new Quaternion(...this.#values);
     }
 

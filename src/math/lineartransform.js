@@ -5,10 +5,10 @@
 
 const LinearTransformType = {
     TS: 0,
-    ST: 0,  // ST and TS are the same type of transform
-    TRS: 1,
-    SRT: 2,
-    Unknown: 3,
+    ST: 1,
+    TRS: 2,
+    SRT: 3,
+    Unknown: 4,
     Inferred: -1
 }
 
@@ -33,6 +33,10 @@ class LinearTransform {
             } else {
                 type = LinearTransformType.TRS;
             }
+        }
+        if(type === LinearTransformType.ST){
+            position_or_matrix = position_or_matrix.component_mult(scale);
+            type = LinearTransformType.TS;
         }
         this.#type = type;
         if(type === LinearTransformType.Unknown){

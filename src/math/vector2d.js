@@ -54,7 +54,7 @@ class Vector2D {
 
 	cross(vec){
 		assert(vec instanceof Vector2D, "You can only subtract a vector to another vector!");
-		return this.x * vec.y + this.y * vec.x;
+		return this.x * vec.y - this.y * vec.x;
 	}
 
 	dot(vec){
