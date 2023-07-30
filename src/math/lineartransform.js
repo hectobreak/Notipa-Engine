@@ -229,7 +229,7 @@ class LinearTransform {
 
     copy(){
         if(this.#type === LinearTransformType.Unknown)
-            return new LinearTransform(this.transform_transpose);
+            return new LinearTransform(this.#transform);
         else
             return new LinearTransform(this.position, this.scale, this.rotation, this.#type);
     }

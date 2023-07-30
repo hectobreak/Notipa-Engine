@@ -17,6 +17,8 @@ class Screen {
 		this.context.attachShader(this.program, this.vs.shader);
 		this.context.attachShader(this.program, this.fs.shader);
 		this.context.linkProgram(this.program);
+		this.context.enable(this.context.DEPTH_TEST);
+
 
 		// Check the link status
 		const linked = this.context.getProgramParameter(this.program, this.context.LINK_STATUS);
@@ -59,14 +61,17 @@ class Screen {
 		];
 		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_texcoord_buffer);
 		this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(quad_texcoords), this.context.STATIC_DRAW);
-
-
+		
 		this.camera = new Camera(CameraTypes.Orthographic);
 	}
 	
 	clear(){
 		this.context.clear(this.context.COLOR_BUFFER_BIT);
 		// this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	}
+
+	clear_depth(clamp = 1){
+		this.context.clearDepth(clamp);
 	}
 
 	drawTextureInfo(texture_info) {

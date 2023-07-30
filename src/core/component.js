@@ -94,6 +94,11 @@ class Component {
 				return (...args) => subobject.component.get_component(...args);
 			}
 		});
+		Object.defineProperty(subobject, "get_components", {
+			get: function get_component() {
+				return (...args) => subobject.component.get_components(...args);
+			}
+		});
 		Object.defineProperty(subobject, "children", {
 			get: function children() {
 				return subobject.component.children;
@@ -169,6 +174,10 @@ class Component {
 			if(c instanceof component) return c;
 		}
 		return null;
+	}
+
+	get_components(component){
+		return this.components.filter(x => x instanceof component);
 	}
 	
 	get children(){

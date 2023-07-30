@@ -17,7 +17,9 @@ class Sprite {
 		assert(origin instanceof Vector3D, "The position must be a Vector3D object!");
 
 		this.deep_copy = () => {
-			return new Image(image, origin, position, scale, parent_object);
+			let tmp = new Image(image, origin, position, scale, parent_object);
+			tmp.transform = this.transform;
+			return tmp;
 		}
 
 		let sprite_obj = this;
@@ -154,6 +156,7 @@ Sprite.from_sprite_sheet = function(image, num_rows, num_columns, callback=null,
 	img.deep_copy = function (){
 		let tmp = Sprite.from_sprite_sheet(image, num_rows, num_columns, callback, ...args);
 		tmp.image_index = img.image_index;
+		tmp.transform = img.transform;
 		return tmp;
 	}
 	return img;
