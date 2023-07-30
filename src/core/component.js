@@ -6,18 +6,17 @@
 let global_var;
 
 class Component {
-	#position;
-	#scale;
 	#transform;
-	constructor(subobject, position=new Vector3D(), scale=new Vector3D(1, 1, 1), parent_object = null){
+	constructor(
+		subobject,
+		transform = new LinearTransform(),
+		parent_object = null
+	){
 		assert(typeof subobject === 'object', "The subobject of a component must be an object!");
-		assert(position instanceof Vector3D, "The position must be a Vector3D object!");
-		assert(scale instanceof Vector3D, "The scale must be a Vector3D object!");
+		assert(transform instanceof LinearTransform, "The transform must be a linear transform!");
 		assert(parent_object === null || parent_object instanceof Component, "The parent object must be a Component!");
 
-		this.#transform = new LinearTransform(position, scale);
-		this.#position = position;
-		this.#scale = scale;
+		this.#transform = transform.copy();
 		
 		this.parent = parent_object;
 		this.subobject = subobject;
@@ -47,8 +46,6 @@ class Component {
 				tmp.add_component(child.deep_copy());
 			}
 			tmp.transform = subobject.transform.copy();
-			if(subobject.position !== null)
-				tmp.set_position_and_scale(subobject.position, subobject.scale);
 			return tmp;
 		}
 		Object.defineProperty(subobject, "parent", {
@@ -58,29 +55,38 @@ class Component {
 		});
 		Object.defineProperty(subobject, "position", {
 			get: function position() {
-				return subobject.component.position;
+				return subobject.component.#transform.position;
 			},
 			set: function position(vec) {
 				assert(vec instanceof Vector3D, "The input vector must be a Vector3D object!");
-				subobject.component.position = vec;
+				subobject.component.#transform.position = vec;
 			}
 		});
 		Object.defineProperty(subobject, "scale", {
 			get: function scale() {
-				return subobject.component.scale;
+				return subobject.component.#transform.scale;
 			},
 			set: function scale(vec) {
 				assert(vec instanceof Vector3D, "The input vector must be a Vector3D object!");
-				subobject.component.scale = vec;
+				subobject.component.#transform.scale = vec;
+			}
+		});
+		Object.defineProperty(subobject, "rotation", {
+			get: function rotation() {
+				return subobject.component.#transform.rotation;
+			},
+			set: function rotation(quat) {
+				assert(quat instanceof Quaternion, "The input rotation must be a Quaternion object!");
+				subobject.component.#transform.rotation = quat;
 			}
 		});
 		Object.defineProperty(subobject, "transform", {
 			get: function transform() {
-				return subobject.component.transform;
+				return subobject.component.#transform;
 			},
 			set: function transform(vec) {
 				assert(vec instanceof LinearTransform, "The transform must be a LinearTransform!");
-				subobject.component.transform = vec;
+				subobject.component.#transform = vec;
 			}
 		});
 		Object.defineProperty(subobject, "get_component", {
@@ -93,60 +99,61 @@ class Component {
 				return subobject.component.children;
 			}
 		});
+		Object.defineProperty(subobject, "cascade_transform", {
+			get: function cascade_transform(){
+				return subobject.component.cascade_transform;
+			}
+		})
 
 	}
 
 	get transform(){
-		if(this.parent !== null) return this.#transform.mult(this.parent.transform);
 		return this.#transform;
 	}
 
 	get position(){
-		let p = this.#position;
+		let p = this.#transform.position;
 		if(p === null) throw new Error("This component has no position!");
-		p = new Vector4D(p.x, p.y, p.z, 1);
-		if(this.parent !== null) {
-			global_var = this;
-			p = this.parent.transform.apply(p);
-		}
-		return new Vector3D(p.x, p.y, p.z);
+		return p;
 	}
 
 	get scale(){
-		let p = this.#scale;
+		let p = this.#transform.scale;
 		if(p === null) throw new Error("This component has no scale!");
-		p = new Vector4D(p.x, p.y, p.z, 0);
-		if(this.parent !== null) p = this.parent.transform.apply(p);
-		return new Vector3D(p.x, p.y, p.z);
+		return new p;
+	}
+
+	get rotation(){
+		let p = this.#transform.rotation;
+		if(p === null) throw new Error("This component has no rotation!");
+		return p;
+	}
+
+	get cascade_transform(){
+		let p = this.parent === null ? new LinearTransform() : this.parent.cascade_transform;
+		return p.mult(this.transform);
 	}
 
 	set position(p){
-		assert(p instanceof Vector3D, "Position must be a 3D vector!");
-		assert(this.#scale !== null, "This element does not have a scale!")
-		this.#position = p.copy();
-		this.#transform = new LinearTransform(this.#position, this.#scale)
+		this.#transform.position = p.copy();
 	}
 
 	set scale(p){
-		assert(p instanceof Vector3D, "Scale must be a 3D vector!");
-		assert(this.#position !== null, "This element does not have a position!")
-		this.#scale = p.copy();
-		this.#transform = new LinearTransform(this.#position, this.#scale)
+		this.#transform.scale = p;
+	}
+
+	set rotation(p){
+		this.#transform.rotation = p;
 	}
 
 	set transform(m){
 		assert(m instanceof LinearTransform, "The transform must be a linear transform!")
 		this.#transform = m.copy();
-		this.#position = null;
-		this.#scale = null;
 	}
 
 	set_position_and_scale(pos, scale){
-		assert(pos instanceof Vector3D, "Position must be a 3D vector!");
-		assert(scale instanceof Vector3D, "Scale must be a 3D vector!");
-		this.#position = pos.copy();
-		this.#scale = scale.copy();
-		this.#transform = new LinearTransform(this.#position, this.#scale);
+		this.#transform.position = pos;
+		this.#transform.position = scale;
 	}
 
 	add_component(subcomponent){

@@ -110,7 +110,19 @@ class LinearTransform {
         if(this.#type === LinearTransformType.Unknown)
             throw new Error("Cannot get rotation of linear transform");
         if(this.#type === LinearTransformType.TS) return new Quaternion();
-        return this.#rotation.copy;
+        return this.#rotation.copy();
+    }
+
+    get position(){
+        if(this.#type === LinearTransformType.Unknown)
+            throw new Error("Cannot get position of linear transform");
+        return this.#translation.copy();
+    }
+
+    get scale(){
+        if(this.#type === LinearTransformType.Unknown)
+            throw new Error("Cannot get scale of linear transform");
+        return this.#scale.copy();
     }
 
     set rotation(quaternion){
@@ -123,12 +135,6 @@ class LinearTransform {
         this.#inverse = undefined;
     }
 
-    get position(){
-        if(this.#type === LinearTransformType.Unknown)
-            throw new Error("Cannot get position of linear transform");
-        return this.#translation.copy;
-    }
-
     set position(pos){
         assert(pos instanceof Vector3D, "The position must be a Vector3D.");
         if(this.#type === LinearTransformType.Unknown)
@@ -136,12 +142,6 @@ class LinearTransform {
         this.#translation = pos;
         this.recompute_matrix();
         this.#inverse = undefined;
-    }
-
-    get scale(){
-        if(this.#type === LinearTransformType.Unknown)
-            throw new Error("Cannot get scale of linear transform");
-        return this.#scale.copy;
     }
 
     set scale(mag){
@@ -228,7 +228,10 @@ class LinearTransform {
     }
 
     copy(){
-        return new LinearTransform(this.#transform);
+        if(this.#type === LinearTransformType.Unknown)
+            return new LinearTransform(this.transform_transpose);
+        else
+            return new LinearTransform(this.position, this.scale, this.rotation, this.#type);
     }
 
     get determinant(){

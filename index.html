@@ -3,6 +3,7 @@
 <script src="./src/math/vector2d.js"></script>
 <script src="./src/math/vector3d.js"></script>
 <script src="./src/math/vector4d.js"></script>
+<script src="./src/math/quaternion.js"></script>
 <script src="./src/math/lineartransform.js"></script>
 <script src="./src/core/shader.js"></script>
 <script src="./src/core/vertexshader.js"></script>
@@ -46,8 +47,10 @@
     }
 
     let test_instantiation1 = engine.instantiate(test_instance);
+
     test_instance.position = new Vector3D(600, 300, 0);
     test_instance.get_component(Sprite).image_index += 1;
+    test_instance.rotation = Quaternion.fromAxisAndAngle(new Vector3D(0, 0, 1), Math.PI / 4)
     let test_instantiation2 = engine.instantiate(test_instance);
 
 </script>

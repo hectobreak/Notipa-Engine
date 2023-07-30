@@ -14,7 +14,7 @@ class Camera {
         type=CameraTypes.Orthographic,
         params={corner: new Vector3D(), size: new Vector3D(800, 600, 1000)},
         position, scale, parent_object) {
-        new Component(this, position, scale, parent_object);
+        new Component(this, new LinearTransform(position, scale), parent_object);
         if(type === CameraTypes.Orthographic){
             let sx = params.size.x/2, sy = -params.size.y/2, sz = params.size.z/2;
             let tx = params.corner.x, ty = params.corner.y, tz = params.corner.z;

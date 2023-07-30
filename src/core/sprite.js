@@ -10,7 +10,7 @@ class Sprite {
 				position= new Vector3D(),
 				scale= new Vector3D(1, 1, 1),
 				parent_object = null){
-		new Component(this, position, scale, parent_object);
+		new Component(this, new LinearTransform(position, scale), parent_object);
 		
 		assert(image === null || typeof image === 'string' || image instanceof Image,
 			"The image must be a string (the path to the image) or an Image object!");
@@ -99,7 +99,7 @@ class Sprite {
 		this.#texture_info.low_x = x_slot * this.dimensions.x;
 		this.#texture_info.low_y = y_slot * this.dimensions.y;
 		this.#texture_info.model_matrix =
-			this.transform.mult(new LinearTransform(
+			this.cascade_transform.mult(new LinearTransform(
 				this.origin.scale(-1),
 				this.dimensions,
 				null
