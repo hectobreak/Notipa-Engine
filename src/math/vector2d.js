@@ -4,11 +4,45 @@
  */
 
 class Vector2D {
+	#x;
+	#y;
+	#dirty;
 	constructor(x=0, y=0){
 		assert(typeof x === 'number', "The x coordinate of a vector must be a number!");
 		assert(typeof y === 'number', "The y coordinate of a vector must be a number!");
-		this.x = x;
-		this.y = y;
+		this.#x = x;
+		this.#y = y;
+
+		this.#dirty = true;
+	}
+
+	get x(){
+		return this.#x;
+	}
+
+	get y(){
+		return this.#y;
+	}
+
+	set x(val){
+		assert(typeof val === 'number', "The x coordinate of a vector must be a number!");
+		this.#x = val;
+		this.#dirty = true;
+	}
+
+	set y(val){
+		assert(typeof val === 'number', "The y coordinate of a vector must be a number!");
+		this.#y = val;
+		this.#dirty = true;
+	}
+
+	get dirty(){
+		return this.#dirty;
+	}
+
+	set dirty(val){
+		assert(typeof val === 'boolean', "The dirty flag must be a boolean!");
+		this.#dirty = val;
 	}
 
 	add(vec){

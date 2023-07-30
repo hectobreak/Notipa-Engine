@@ -4,15 +4,70 @@
  */
 
 class Vector4D {
+    #x;
+    #y;
+    #z;
+    #w;
+    #dirty;
     constructor(x=0, y=0, z=0, w=1){
         assert(typeof x === 'number', "The x coordinate of a vector must be a number!");
         assert(typeof y === 'number', "The y coordinate of a vector must be a number!");
         assert(typeof z === 'number', "The z coordinate of a vector must be a number!");
         assert(typeof w === 'number', "The w coordinate of a vector must be a number!");
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
+        this.#x = x;
+        this.#y = y;
+        this.#z = z;
+        this.#w = w;
+        this.#dirty = true;
+    }
+
+    get x(){
+        return this.#x;
+    }
+
+    get y(){
+        return this.#y;
+    }
+
+    get z(){
+        return this.#z;
+    }
+
+    get w(){
+        return this.#w;
+    }
+
+    set x(val){
+        assert(typeof val === 'number', "The x coordinate of a vector must be a number!");
+        this.#x = val;
+        this.#dirty = true;
+    }
+
+    set y(val){
+        assert(typeof val === 'number', "The y coordinate of a vector must be a number!");
+        this.#y = val;
+        this.#dirty = true;
+    }
+
+    set z(val){
+        assert(typeof val === 'number', "The z coordinate of a vector must be a number!");
+        this.#z = val;
+        this.#dirty = true;
+    }
+
+    set w(val){
+        assert(typeof val === 'number', "The w coordinate of a vector must be a number!");
+        this.#w = val;
+        this.#dirty = true;
+    }
+
+    get dirty(){
+        return this.#dirty;
+    }
+
+    set dirty(val){
+        assert(typeof val === 'boolean', "The dirty flag must be a boolean!");
+        this.#dirty = val;
     }
 
     add(vec){

@@ -4,12 +4,12 @@
  */
 
 const LinearTransformType = {
-    TS: 0,
-    ST: 1,
-    TRS: 2,
-    SRT: 3,
-    Unknown: 4,
-    Inferred: -1
+    TS: 1,
+    ST: 2,
+    TRS: 4,
+    SRT: 8,
+    Unknown: 16,
+    Inferred: 0
 }
 
 class LinearTransform {
@@ -52,7 +52,7 @@ class LinearTransform {
             this.#scale = scale;
             this.#translation = position_or_matrix;
             this.recompute_matrix();
-        } else if(type === LinearTransformType.TRS || type === LinearTransformType.SRT){
+        } else if(type & (LinearTransformType.TRS | LinearTransformType.SRT)){
             assert(position_or_matrix instanceof Vector3D, "The position must be a 3D vector!");
             assert(scale instanceof Vector3D, "The scale must be a 3D vector!");
             assert(rotation instanceof Quaternion, "The rotation must be a quaternion!");
@@ -77,6 +77,8 @@ class LinearTransform {
                 0,  0, sz, tz,
                 0,  0,  0,  1
             ];
+            this.#translation.dirty = false;
+            this.#scale.dirty = false;
         } else if(this.#type === LinearTransformType.TRS){
             let [r00, r01, r02, r10, r11, r12, r20, r21, r22] = this.#rotation.rotation_matrix;
             let sx = this.#scale.x, sy = this.#scale.y, sz = this.#scale.z;
@@ -87,6 +89,8 @@ class LinearTransform {
                 sx * r20, sy * r21, sz * r22, tz,
                        0,        0,        0,  1
             ];
+            this.#translation.dirty = false;
+            this.#scale.dirty = false;
         } else if(this.#type === LinearTransformType.SRT){
             let [r00, r01, r02, r10, r11, r12, r20, r21, r22] = this.#rotation.rotation_matrix;
             let sx = this.#scale.x, sy = this.#scale.y, sz = this.#scale.z;
@@ -97,6 +101,8 @@ class LinearTransform {
                 sz * r20, sz * r21, sz * r22, sz*(tx*r20 + ty*r21 + tz*r22),
                        0,        0,        0,                             1
             ];
+            this.#translation.dirty = false;
+            this.#scale.dirty = false;
         }
     }
 
@@ -114,6 +120,7 @@ class LinearTransform {
         if(this.#type === LinearTransformType.TS) this.#type = LinearTransformType.TRS;
         this.#rotation = quaternion;
         this.recompute_matrix();
+        this.#inverse = undefined;
     }
 
     get position(){
@@ -128,6 +135,7 @@ class LinearTransform {
             throw new Error("Cannot set position of linear transform");
         this.#translation = pos;
         this.recompute_matrix();
+        this.#inverse = undefined;
     }
 
     get scale(){
@@ -142,9 +150,13 @@ class LinearTransform {
             throw new Error("Cannot set scale of linear transform");
         this.#scale = mag;
         this.recompute_matrix();
+        this.#inverse = undefined;
     }
 
     get transform(){
+        if(this.#type !== LinearTransformType.Unknown && (this.#translation.dirty || this.#scale.dirty)){
+            this.recompute_matrix();
+        }
         return this.#transform.slice();
     }
 
@@ -183,7 +195,7 @@ class LinearTransform {
     apply(vec){
         if(vec instanceof Vector3D) vec = new Vector4D(vec.x, vec.y, vec.z, 1);
         assert(vec instanceof Vector4D, "A transform must be applied to a 3 or 4 vector!");
-        let m = this.#transform;
+        let m = this.transform;
         return new Vector4D(
             vec.x * m[ 0] + vec.y * m[ 1] + vec.z * m[ 2] + vec.w * m[ 3],
             vec.x * m[ 4] + vec.y * m[ 5] + vec.z * m[ 6] + vec.w * m[ 7],
@@ -193,7 +205,7 @@ class LinearTransform {
     }
 
     get matrix(){
-        return this.#transform.slice();
+        return this.transform;
     }
 
     copy(){
@@ -211,7 +223,8 @@ class LinearTransform {
     }
 
     get inverse(){
-        if(this.#inverse === undefined) {
+        let dirty = this.#type !== LinearTransformType.Unknown && (this.#translation.dirty || this.#scale.dirty);
+        if(this.#inverse === undefined || dirty) {
             let det = this.determinant;
             if (det === 0) throw new Error("This transform is not reversible!");
             if(this.#type === LinearTransformType.TS) {
