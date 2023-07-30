@@ -152,7 +152,9 @@ Sprite.from_sprite_sheet = function(image, num_rows, num_columns, callback=null,
 	});
 
 	img.deep_copy = function (){
-		return Sprite.from_sprite_sheet(image, num_rows, num_columns, callback, ...args);
+		let tmp = Sprite.from_sprite_sheet(image, num_rows, num_columns, callback, ...args);
+		tmp.image_index = img.image_index;
+		return tmp;
 	}
 	return img;
 }

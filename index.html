@@ -25,7 +25,7 @@
         (sprite) => { sprite.center_origin() })
     );
 
-    test_instance.position = new Vector3D(400, 300, 0);
+    test_instance.position = new Vector3D(200, 300, 0);
 
     test_instance.step = function(){
         if(this.speed === undefined) this.speed = new Vector3D();
@@ -45,6 +45,9 @@
         }
     }
 
-    let test_instantiation = engine.instantiate(test_instance);
+    let test_instantiation1 = engine.instantiate(test_instance);
+    test_instance.position = new Vector3D(600, 300, 0);
+    test_instance.get_component(Sprite).image_index += 1;
+    let test_instantiation2 = engine.instantiate(test_instance);
 
 </script>
