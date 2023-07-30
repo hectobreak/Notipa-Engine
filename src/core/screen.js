@@ -35,7 +35,31 @@ class Screen {
 		this.textureLocation = this.context.getUniformLocation(this.program, "u_texture");
 
 		// Create a buffer.
-		this.positionBuffer = this.context.createBuffer();
+		this.quad_position_buffer = this.context.createBuffer();
+		this.quad_texcoord_buffer = this.context.createBuffer();
+
+		const quad_positions = [
+			0, 0,
+			0, 1,
+			1, 0,
+			1, 0,
+			0, 1,
+			1, 1,
+		];
+		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_position_buffer);
+		this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(quad_positions), this.context.STATIC_DRAW);
+
+		const quad_texcoords = [
+			0, 0,
+			0, 1,
+			1, 0,
+			1, 0,
+			0, 1,
+			1, 1,
+		];
+		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_texcoord_buffer);
+		this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(quad_texcoords), this.context.STATIC_DRAW);
+
 
 		this.camera = new Camera(CameraTypes.Orthographic);
 	}
@@ -46,13 +70,15 @@ class Screen {
 	}
 
 	drawTextureInfo(texture_info) {
-		console.log(texture_info);
 		let srcX = texture_info.low_x;
 		let srcY = texture_info.low_y;
 		let srcWidth = texture_info.sprite_width;
 		let srcHeight = texture_info.sprite_height;
 		let dstWidth = texture_info.sprite_width;
 		let dstHeight = texture_info.sprite_height;
+		let texWidth = texture_info.width;
+		let texHeight = texture_info.height;
+		let tex = texture_info.texture;
 		let dstX = 0;
 		let dstY = 0;
 
@@ -62,10 +88,10 @@ class Screen {
 		this.context.useProgram(this.program);
 
 		// Setup the attributes to pull data from our buffers
-		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.positionBuffer);
+		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_position_buffer);
 		this.context.enableVertexAttribArray(this.positionLocation);
 		this.context.vertexAttribPointer(this.positionLocation, 2, this.context.FLOAT, false, 0, 0);
-		this.context.bindBuffer(this.context.ARRAY_BUFFER, texcoordBuffer);
+		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_texcoord_buffer);
 		this.context.enableVertexAttribArray(this.texcoordLocation);
 		this.context.vertexAttribPointer(this.texcoordLocation, 2, this.context.FLOAT, false, 0, 0);
 
@@ -78,15 +104,9 @@ class Screen {
 		// Set the matrix.
 		this.context.uniformMatrix4fv(this.matrixLocation, false, new Float32Array(transform.matrix));
 
-		// Because texture coordinates go from 0 to 1
-		// and because our texture coordinates are already a unit quad
-		// we can select an area of the texture by scaling the unit quad
-		// down
-		let texMatrix = m4.translation(srcX / texWidth, srcY / texHeight, 0);
-		texMatrix = m4.scale(texMatrix, srcWidth / texWidth, srcHeight / texHeight, 1);
-
 		// Set the texture matrix.
-		this.context.uniformMatrix4fv(this.textureMatrixLocation, false, texMatrix);
+		this.context.uniformMatrix3fv(this.textureMatrixLocation, false,
+			new Float32Array(texture_info.texture_matrix));
 
 		// Tell the shader to get the texture from texture unit 0
 		this.context.uniform1i(this.textureLocation, 0);

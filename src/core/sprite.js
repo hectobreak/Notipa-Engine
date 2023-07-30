@@ -22,7 +22,7 @@ class Sprite {
 
 		let sprite_obj = this;
 		this.has_loaded = false;
-		this.dimensions = new Vector3D();
+		this.dimensions = new Vector3D(1, 1, 1);
 		this.image_index = 0;
 		this.num_rows = 1;
 		this.num_cols = 1;
@@ -53,6 +53,14 @@ class Sprite {
 		this.loading_texture_info = false;
 	}
 
+	get texture_matrix() {
+		let dx = 1/this.num_cols;
+		let dy = 1/this.num_rows;
+		let x_slot = this.image_index % this.num_cols;
+		let y_slot = (this.image_index - x_slot) / this.num_cols;
+		return [dx, 0, 0, 0, dy, 0, dx*x_slot, dy*y_slot, 1];
+	}
+
 	loadImageAndCreateTextureInfo(gl, keep_trying = false) {
 		if(!keep_trying && this.loading_texture_info) return;
 		this.loading_texture_info = true;
@@ -77,7 +85,8 @@ class Sprite {
 			width: this.dimensions.x * this.num_cols,
 			height: this.dimensions.y * this.num_rows,
 			texture: tex,
-			model_matrix: this.transform.matrix
+			model_matrix: this.transform.mult(new LinearTransform(new Vector3D(), this.dimensions)).transform_transpose,
+			texture_matrix: this.texture_matrix
 		};
 		gl.bindTexture(gl.TEXTURE_2D, this.#texture_info.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
@@ -89,7 +98,14 @@ class Sprite {
 		let y_slot = (this.image_index - x_slot) / this.num_cols;
 		this.#texture_info.low_x = x_slot * this.dimensions.x;
 		this.#texture_info.low_y = y_slot * this.dimensions.y;
-		this.#texture_info.model_matrix = this.transform.matrix;
+		this.#texture_info.model_matrix =
+			this.transform.mult(new LinearTransform(
+				this.origin.scale(-1),
+				this.dimensions,
+				null
+				)
+			).transform_transpose;
+		this.#texture_info.texture_matrix = this.texture_matrix;
 		return this.#texture_info;
 	}
 

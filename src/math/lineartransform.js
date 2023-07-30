@@ -153,18 +153,37 @@ class LinearTransform {
         this.#inverse = undefined;
     }
 
-    get transform(){
+    get transform_transpose(){
         if(this.#type !== LinearTransformType.Unknown && (this.#translation.dirty || this.#scale.dirty)){
             this.recompute_matrix();
         }
         return this.#transform.slice();
     }
 
-    set transform(arr){
+    set transform_transpose(arr){
         assert(arr instanceof Array, "The transform must be an array");
         assert(arr.length === 16, "The matrix must be a 4x4 matrix");
         this.#transform = arr;
         this.#type = LinearTransformType.Unknown;
+    }
+
+    get transform(){
+        let arr = new Array(16);
+        let tmp = this.transform_transpose;
+        for(let i = 0; i < 4; ++i){
+            for(let j = 0; j < 4; ++j) arr[i | (j << 2)] = tmp[j | (i << 2)];
+        }
+        return arr;
+    }
+
+    set transform(arr){
+        assert(arr instanceof Array, "The transform must be an array");
+        assert(arr.length === 16, "The matrix must be a 4x4 matrix");
+        let tmp = new Array(16);
+        for(let i = 0; i < 4; ++i){
+            for(let j = 0; j < 4; ++j) tmp[i | (j << 2)] = arr[j | (i << 2)];
+        }
+        this.#transform = tmp;
     }
 
     mult(lt){
@@ -187,7 +206,7 @@ class LinearTransform {
         for(let i of [0, 1, 2, 3]){
             for(let j  of [0, 4, 8, 12]) {
                 for(let [k, q] of [[0, 0], [1, 4], [2, 8], [3, 12]]){
-                    arr[i | j] += this.transform[k | j] * lt.transform[i | q];
+                    arr[i | j] += this.transform_transpose[k | j] * lt.transform_transpose[i | q];
         }   }   }
         return new LinearTransform(arr);
     }
@@ -233,7 +252,8 @@ class LinearTransform {
                 let a = this.#scale.x, b = this.#scale.y, c = this.#scale.z;
                 this.#inverse = new LinearTransform(
                     new Vector3D(-x / a, -y / b, -z / c),
-                    new Vector3D(1 / a, 1 / b, 1 / c));
+                    new Vector3D(1 / a, 1 / b, 1 / c)
+                );
             } else if(this.#type === LinearTransformType.TRS) {
                 let x = this.#translation.x, y = this.#translation.y, z = this.#translation.z;
                 let a = this.#scale.x, b = this.#scale.y, c = this.#scale.z;

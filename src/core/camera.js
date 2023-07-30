@@ -16,14 +16,14 @@ class Camera {
         position, scale, parent_object) {
         new Component(this, position, scale, parent_object);
         if(type === CameraTypes.Orthographic){
-            let sx = params.size.x, sy = params.size.y, sz = params.size.z;
+            let sx = params.size.x/2, sy = -params.size.y/2, sz = params.size.z/2;
             let tx = params.corner.x, ty = params.corner.y, tz = params.corner.z;
-            this.#camera_transform = new LinearTransform([
-                1/sx,    0,    0, -tx,
-                   0, 1/sy,    0, -ty,
-                   0,    0, 1/sz, -tz,
-                   0,    0,    0,   1
-            ]);
+            this.#camera_transform = new LinearTransform(
+                new Vector3D(-tx - sx, -ty + sy, -tz),
+                new Vector3D(1/sx, 1/sy, 1/sz),
+                null,
+                LinearTransformType.ST
+            );
         } else if(type === CameraTypes.Perspective){
             let l = params.corner.x, b = params.corner.y, n = params.corner.z;
             let r = l + params.size.x, t = params.size.y, f = n + params.size.z;
@@ -39,6 +39,6 @@ class Camera {
     }
 
     get camera_transform(){
-        return this.#camera_transform.mult(this.transform.inverse);
+        return this.#camera_transform.mult(this.transform.inverse)  ;
     }
 }
