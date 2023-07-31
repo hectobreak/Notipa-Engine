@@ -61,7 +61,7 @@ class Screen {
 		];
 		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_texcoord_buffer);
 		this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(quad_texcoords), this.context.STATIC_DRAW);
-		
+
 		this.camera = new Camera(CameraTypes.Orthographic);
 	}
 	

@@ -12,7 +12,7 @@ class Camera {
     #camera_transform;
     constructor(
         type=CameraTypes.Orthographic,
-        params={corner: new Vector3D(), size: new Vector3D(800, 600, 1000)},
+        params={corner: new Vector3D(), size: new Vector3D(800, 600, 300)},
         position, scale, parent_object) {
         new Component(this, new LinearTransform(position, scale), parent_object);
         if(type === CameraTypes.Orthographic){

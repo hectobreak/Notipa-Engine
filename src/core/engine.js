@@ -22,6 +22,8 @@ class Engine {
 			document.body.appendChild(canvas);
 		}
 
+		this.input_intercept = new InputIntercept(this.screen);
+
 		function make_step(elem){
 			if(elem.step !== undefined) elem.step();
 			for(let component of elem.component.components){
@@ -71,6 +73,15 @@ class Engine {
 		this.instances.push(inst);
 		this.add_component(inst);
 		this.make_create(inst);
+		this.input_intercept.add_listener(inst);
 		return inst;
+	}
+
+	get mouseX(){
+		return this.input_intercept.mouse.x;
+	}
+
+	get mouseY(){
+		return this.input_intercept.mouse.y;
 	}
 }
