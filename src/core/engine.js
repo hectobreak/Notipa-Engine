@@ -31,22 +31,41 @@ class Engine {
 			}
 		}
 
+		let transparent_stack = [];
+
 		function make_draw(elem){
 			if(elem.on_draw !== undefined) {
-				elem.on_draw(Engine.singleton.screen);
+				if(elem.is_transparent) transparent_stack.push(elem);
+				else elem.on_draw(Engine.singleton.screen);
 			}
 			for(let component of elem.component.components){
 				make_draw(component);
 			}
 		}
 
+		function sort_by_depth(list){
+			let key = function(object) {
+				let pos = object.cascade_transform.apply(new Vector3D(0, 0, 0));
+				return Engine.singleton.screen.camera.camera_transform.apply(pos).z;
+			}
+
+			let cmp = function(a, b){
+				return (key(a) - key(b));
+			}
+			list.sort(cmp);
+		}
+
 		function tick(){
 			let t0 = Date.now();
 			
-			// Step stage
+			transparent_stack = [];
 			Engine.singleton.instances.map(make_step);
 			Engine.singleton.screen.clear();
 			Engine.singleton.instances.map(make_draw);
+			Engine.singleton.screen.enable_blending();
+			sort_by_depth(transparent_stack);
+			transparent_stack.map(x => x.on_draw(Engine.singleton.screen));
+			Engine.singleton.screen.disable_blending();
 	
 			let dt = Date.now() - t0;
 			if(dt < 1000 * framerate){

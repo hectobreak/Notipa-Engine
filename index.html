@@ -10,6 +10,7 @@
 <script src="./src/core/fragmentshader.js"></script>
 <script src="./src/core/component.js"></script>
 <script src="./src/core/sprite.js"></script>
+<script src="./src/core/textimage.js"></script>
 <script src="./src/core/camera.js"></script>
 <script src="./src/core/screen.js"></script>
 <script src="./src/core/inputintercept.js"></script>
@@ -141,15 +142,17 @@
     }
 
     test_instance.create = function(){
-        console.log("create", this.position.x, this.position.y);
         this.position.x = Math.random() * 700 + 50;
-        console.log("create", this.position.x, this.position.y);
         this.position.y = Math.random() * 500 + 50;
-        console.log("create", this.position.x, this.position.y);
     }
 
     let test_instantiation1 = engine.instantiate(test_instance);
     let test_instantiation2 = engine.instantiate(test_instance);
+
+    let test_text = new TextImage("Hello World!\nGoodbye World!");
+    test_text.position.x = 100;
+    test_text.position.y = 100;
+    let test_textinstance = engine.instantiate(test_text);
 
     // test_instance.position = new Vector3D(600, 300, 0);
     // test_instance.get_component(Sprite).image_index += 1;

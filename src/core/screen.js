@@ -19,7 +19,6 @@ class Screen {
 		this.context.linkProgram(this.program);
 		this.context.enable(this.context.DEPTH_TEST);
 
-
 		// Check the link status
 		const linked = this.context.getProgramParameter(this.program, this.context.LINK_STATUS);
 		if (!linked) {
@@ -66,8 +65,18 @@ class Screen {
 	}
 	
 	clear(){
-		this.context.clear(this.context.COLOR_BUFFER_BIT);
-		// this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context.clear(this.context.COLOR_BUFFER_BIT | this.context.DEPTH_BUFFER_BIT);
+	}
+
+	enable_blending(){
+		this.context.blendFunc(this.context.ONE, this.context.ONE_MINUS_SRC_ALPHA);
+		this.context.enable(this.context.BLEND);
+		this.context.depthMask(false);
+	}
+
+	disable_blending(){
+		this.context.disable(this.context.BLEND);
+		this.context.depthMask(true);
 	}
 
 	clear_depth(clamp = 1){

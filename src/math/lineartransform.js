@@ -214,11 +214,11 @@ class LinearTransform {
     apply(vec){
         if(vec instanceof Vector3D) vec = new Vector4D(vec.x, vec.y, vec.z, 1);
         assert(vec instanceof Vector4D, "A transform must be applied to a 3 or 4 vector!");
-        let m = this.transform;
+        let m = this.#transform;
         return new Vector4D(
-            vec.x * m[ 0] + vec.y * m[ 1] + vec.z * m[ 2] + vec.w * m[ 3],
-            vec.x * m[ 4] + vec.y * m[ 5] + vec.z * m[ 6] + vec.w * m[ 7],
-            vec.x * m[ 8] + vec.y * m[ 9] + vec.z * m[10] + vec.w * m[11],
+            vec.x * m[0] + vec.y * m[1] + vec.z * m[2] + vec.w * m[3],
+            vec.x * m[4] + vec.y * m[5] + vec.z * m[6] + vec.w * m[7],
+            vec.x * m[8] + vec.y * m[9] + vec.z * m[10] + vec.w * m[11],
             vec.x * m[12] + vec.y * m[13] + vec.z * m[14] + vec.w * m[15]
         );
     }

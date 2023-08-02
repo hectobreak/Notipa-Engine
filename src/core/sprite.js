@@ -5,6 +5,7 @@
 
 class Sprite {
 	#texture_info = null;
+	#is_transparent = false;
 	constructor(image= null,
 				origin= new Vector3D(),
 				position= new Vector3D(),
@@ -111,6 +112,15 @@ class Sprite {
 		return this.#texture_info;
 	}
 
+	get is_transparent(){
+		return this.#is_transparent;
+	}
+
+	set is_transparent(bool){
+		assert(typeof bool === 'boolean', "An object is either transparent (true) or is not (false)");
+		return this.#is_transparent;
+	}
+
 	apply_when_loaded(callback){
 		if(!this.has_loaded) setTimeout(() => {this.apply_when_loaded(callback)}, 10);
 		else callback();
@@ -118,23 +128,6 @@ class Sprite {
 
 	center_origin(){
 		this.apply_when_loaded(() => { this.origin = this.dimensions.scale(0.5); });
-	}
-	
-	get_image_arguments(){
-		this.image_index %= this.num_rows * this.num_cols;
-		
-		let x_slot = this.image_index % this.num_cols;
-		let y_slot = (this.image_index - x_slot) / this.num_cols;
-		
-		let sx = x_slot * this.dimensions.x;
-		let sy = y_slot * this.dimensions.y;
-		let swidth = this.dimensions.x;
-		let sheight = this.dimensions.y;
-	
-		let scale = this.component.scale;
-		let pos = this.component.position.sub(this.origin.component_mult(scale));
-		scale = scale.component_mult(this.dimensions);
-		return [this.img, sx, sy, swidth, sheight, pos.x, pos.y, scale.x, scale.y];
 	}
 	
 	on_draw(screen){
