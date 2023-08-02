@@ -14,6 +14,7 @@
 <script src="./src/core/screen.js"></script>
 <script src="./src/core/inputintercept.js"></script>
 <script src="./src/core/instance.js"></script>
+<script src="./src/core/scene.js"></script>
 <script src="./src/core/engine.js"></script>
 <script>
 
@@ -92,6 +93,7 @@
         this.delta_rang += Math.random() * 0.01 - 0.005;
         if(this.delta_rang > 5) this.delta_rang = 5;
         if(this.delta_rang < -5) this.delta_rang = -5;
+        this.delta_rang *= Math.pow(0.6, Engine.singleton.deltaTime);
         this.rang += this.delta_rang;
 
         this.rotation = Quaternion.fromAxisAndAngle(this.rvec, this.rang);
@@ -108,11 +110,11 @@
             this.speed.y = Math.abs(this.speed.y);
         }
         if(this.position.x > 750) {
-            this.position.y = 750 - 2 * (this.position.x - 750);
+            this.position.x = 750 - 2 * (this.position.x - 750);
             this.speed.x = - Math.abs(this.speed.x);
         }
         if(this.position.x < 50) {
-            this.position.y = 50 - 2 * (this.position.x - 50);
+            this.position.x = 50 - 2 * (this.position.x - 50);
             this.speed.x = Math.abs(this.speed.x);
         }
         // let scaling = (this.speed.y * this.speed.y * 5e-7 + 1);
@@ -126,7 +128,6 @@
     }
 
     test_instance.on_key_down = function(key){
-        console.log(key);
         if(key === 'LeftClick'){
             let dx = engine.mouseX - this.position.x;
             let dy = engine.mouseY - this.position.y;
@@ -134,11 +135,21 @@
             for(let sprite of this.get_components(Sprite)){
                 sprite.image_index += 1;
                 this.speed = this.speed.add(new Vector3D(Math.random() * 400 - 200, Math.random() * 400 - 200, 0));
+                this.delta_rang *= 1.2;
             }
         }
     }
 
+    test_instance.create = function(){
+        console.log("create", this.position.x, this.position.y);
+        this.position.x = Math.random() * 700 + 50;
+        console.log("create", this.position.x, this.position.y);
+        this.position.y = Math.random() * 500 + 50;
+        console.log("create", this.position.x, this.position.y);
+    }
+
     let test_instantiation1 = engine.instantiate(test_instance);
+    let test_instantiation2 = engine.instantiate(test_instance);
 
     // test_instance.position = new Vector3D(600, 300, 0);
     // test_instance.get_component(Sprite).image_index += 1;

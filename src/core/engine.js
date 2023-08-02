@@ -11,7 +11,6 @@ class Engine {
 		new Component(this);
 		Engine.singleton = this;
 		this.deltaTime = framerate;
-		this.instances = [];
 		this.screen = null;
 		
 		{
@@ -23,6 +22,7 @@ class Engine {
 		}
 
 		this.input_intercept = new InputIntercept(this.screen);
+		this.set_scene(new Scene());
 
 		function make_step(elem){
 			if(elem.step !== undefined) elem.step();
@@ -61,20 +61,14 @@ class Engine {
 		tick();
 	}
 
-	make_create(elem){
-		if(elem.create !== undefined) elem.create();
-		for(let component of elem.component.components){
-			this.make_create(component);
-		}
+	instantiate(instance){
+		return this.scene.instantiate(instance);
 	}
 
-	instantiate(instance){
-		let inst = instance.deep_copy();
-		this.instances.push(inst);
-		this.add_component(inst);
-		this.make_create(inst);
-		this.input_intercept.add_listener(inst);
-		return inst;
+	set_scene(scene){
+		assert(scene instanceof Scene, "The scene must be of class Scene!");
+		this.scene = scene;
+		this.input_intercept.listeners = scene.instances;
 	}
 
 	get mouseX(){
@@ -83,5 +77,9 @@ class Engine {
 
 	get mouseY(){
 		return this.input_intercept.mouse.y;
+	}
+
+	get instances(){
+		return this.scene.instances;
 	}
 }

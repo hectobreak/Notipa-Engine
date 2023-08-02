@@ -116,13 +116,13 @@ class LinearTransform {
     get position(){
         if(this.#type === LinearTransformType.Unknown)
             throw new Error("Cannot get position of linear transform");
-        return this.#translation.copy();
+        return this.#translation;
     }
 
     get scale(){
         if(this.#type === LinearTransformType.Unknown)
             throw new Error("Cannot get scale of linear transform");
-        return this.#scale.copy();
+        return this.#scale;
     }
 
     set rotation(quaternion){
@@ -231,7 +231,7 @@ class LinearTransform {
         if(this.#type === LinearTransformType.Unknown)
             return new LinearTransform(this.#transform);
         else
-            return new LinearTransform(this.position, this.scale, this.rotation, this.#type);
+            return new LinearTransform(this.position.copy(), this.scale.copy(), this.rotation, this.#type);
     }
 
     get determinant(){

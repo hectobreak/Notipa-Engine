@@ -73,7 +73,4 @@ class InputIntercept {
         }
     }
 
-    add_listener(listener) {
-        this.listeners.push(listener);
-    }
 }
