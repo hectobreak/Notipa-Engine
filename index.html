@@ -29,7 +29,7 @@
         2,
         (sprite) => { sprite.center_origin() }
     );
-    s1.position = new Vector3D(0, 0, 128);
+    s1.position = new Vector3D(0, 0, 126);
     test_instance.component.add_component(s1);
 
     let s2 = Sprite.from_sprite_sheet(
@@ -38,7 +38,7 @@
         2,
         (sprite) => { sprite.center_origin() }
     );
-    s2.position = new Vector3D(0, 0, -128);
+    s2.position = new Vector3D(0, 0, -126);
     test_instance.component.add_component(s2);
 
     let s3 = Sprite.from_sprite_sheet(
@@ -48,7 +48,7 @@
         (sprite) => { sprite.center_origin() }
     );
     s3.rotation = Quaternion.fromEulerAngles(0, Math.PI/2, 0);
-    s3.position = new Vector3D(-128, 0, 0);
+    s3.position = new Vector3D(-126, 0, 0);
     test_instance.component.add_component(s3);
 
     let s4 = Sprite.from_sprite_sheet(
@@ -58,7 +58,7 @@
         (sprite) => { sprite.center_origin() }
     );
     s4.rotation = Quaternion.fromEulerAngles(0, Math.PI/2, 0);
-    s4.position = new Vector3D(128, 0, 0);
+    s4.position = new Vector3D(126, 0, 0);
     test_instance.component.add_component(s4);
 
     let s5 = Sprite.from_sprite_sheet(
@@ -68,7 +68,7 @@
         (sprite) => { sprite.center_origin() }
     );
     s5.rotation = Quaternion.fromEulerAngles(0, 0, Math.PI/2);
-    s5.position = new Vector3D(0, -128, 0);
+    s5.position = new Vector3D(0, -126, 0);
     test_instance.component.add_component(s5);
 
     let s6 = Sprite.from_sprite_sheet(
@@ -78,7 +78,7 @@
         (sprite) => { sprite.center_origin() }
     );
     s6.rotation = Quaternion.fromEulerAngles(0, 0, Math.PI/2);
-    s6.position = new Vector3D(0, 128, 0);
+    s6.position = new Vector3D(0, 126, 0);
     test_instance.component.add_component(s6);
 
     test_instance.position = new Vector3D(400, 300, 0);
