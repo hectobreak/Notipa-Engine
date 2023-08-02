@@ -29,6 +29,8 @@ class TextImage {
     #align
     #baseline
     #text
+    #has_loaded = false
+    #gl = null
 
     constructor(text = "",
                 position= new Vector3D(),
@@ -52,6 +54,9 @@ class TextImage {
             tmp.#baseline = this.#baseline;
             return tmp;
         }
+
+        this.loading_texture_info = false;
+        this.img;
     }
 
     get dimensions(){
@@ -82,9 +87,18 @@ class TextImage {
             ctx.fillText(this.#text, measures.actualBoundingBoxLeft, measures.actualBoundingBoxAscent);
             this.#dimensions = new Vector3D(measures.box_width, measures.box_height, 1);
 
+            this.#has_loaded = false;
+            this.loading_texture_info = false;
+            let glob = this;
             const img_url = this.#canvas.toDataURL('image/png');
-            this.#image = document.createElement("img");
-            this.#image.src = img_url;
+            let tmp = document.createElement("img");
+            let gl = this.#gl;
+            tmp.onload = function(){
+                glob.#has_loaded = true;
+                glob.#image = tmp;
+                if(gl !== null) glob.loadImageAndCreateTextureInfo(gl);
+            }
+            tmp.src = img_url;
         }
         return this.#image;
     }
@@ -93,7 +107,16 @@ class TextImage {
         return [1, 0, 0, 0, 1, 0, 0, 0, 1];
     }
 
-    loadImageAndCreateTextureInfo(gl) {
+    loadImageAndCreateTextureInfo(gl, keep_trying = false) {
+        if(!keep_trying && this.loading_texture_info) return;
+        this.loading_texture_info = true;
+        if(!this.#has_loaded) {
+            setTimeout(() => {this.loadImageAndCreateTextureInfo(gl, true)}, 10);
+            return;
+        }
+
+        this.#gl = gl;
+
         let tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
 
@@ -129,6 +152,13 @@ class TextImage {
             ).transform_transpose;
         this.#texture_info.texture_matrix = this.texture_matrix;
         return this.#texture_info;
+    }
+
+    set text(txt){
+        assert(typeof txt === 'string', "The text must be a string!");
+        this.#text = txt;
+        this.#canvas = null;
+        this.img;
     }
 
     on_draw(screen){
