@@ -17,6 +17,9 @@ class Engine {
 			let canvas = document.createElement("canvas");
 			canvas.width = window_width;
 			canvas.height = window_height;
+			canvas.style.position = "absolute";
+			canvas.style.top = "0px";
+			canvas.style.left = "0px";
 			this.screen = new Screen(canvas);
 			document.body.appendChild(canvas);
 		}
