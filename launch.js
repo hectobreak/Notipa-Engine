@@ -6,6 +6,7 @@ const process = require("process");
 
 const core_path = 'core/';
 const app_path = 'app/';
+const app_descriptor = 'app/app.json';
 
 function load_js_files(directory, callback){
     fs.readdir(directory, function(err, files){
@@ -53,12 +54,7 @@ load_js_files(core_path, function(core_files) {
 function main(){
     const { app, BrowserWindow } = require('electron');
     const createWindow = () => {
-        const win = new BrowserWindow({
-            width: 800,
-            height: 600,
-            title: "Notipa Engine",
-            icon: 'icons/icon.ico'
-        });
+        const win = new BrowserWindow(JSON.parse(fs.readFileSync(app_descriptor)));
         win.setMenu(null);
         win.loadFile('index.html');
     }
