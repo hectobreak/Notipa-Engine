@@ -1,0 +1,112 @@
+<body style="background-color: #444"></body>
+
+<script>
+
+let definition;
+
+let canvas, ctx;
+
+let draw_gear = function(r1, r2, n_teeth, teeth_gap = 0, color="#093575", shift_x = 0, shift_y = 0){
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    for(let i = 0; i < n_teeth; ++i){
+        let alpha1 = 2 * Math.PI * i / n_teeth - teeth_gap/2;
+        let alpha2 = 2 * Math.PI * (i + 0.5) / n_teeth + teeth_gap/2;
+        if(i === 0)
+            ctx.moveTo(shift_x + definition/2 + r1 * Math.cos(alpha1), shift_y + definition/2 + r1 * Math.sin(alpha1));
+        else
+            ctx.lineTo(shift_x + definition/2 + r1 * Math.cos(alpha1), shift_y + definition/2 + r1 * Math.sin(alpha1));
+        ctx.lineTo(shift_x + definition/2 + r2 * Math.cos(alpha1), shift_y + definition/2 + r2 * Math.sin(alpha1));
+        ctx.lineTo(shift_x + definition/2 + r2 * Math.cos(alpha2), shift_y + definition/2 + r2 * Math.sin(alpha2));
+        ctx.lineTo(shift_x + definition/2 + r1 * Math.cos(alpha2), shift_y + definition/2 + r1 * Math.sin(alpha2));
+    }
+    ctx.fill();
+}
+
+let draw_bind = function(r, angle, color="#FFFFFF"){
+    let cosa = Math.cos(angle), sina = Math.sin(angle);
+    let sqrt3 = Math.sqrt(3);
+    
+    function draw_shape(shape, scale_y = 1){
+        let first = true;
+        ctx.beginPath();
+        for(let [x0, y0] of shape){
+            let x1 = x0 * cosa + scale_y * y0 * sina, y1 = - x0 * sina + scale_y * y0 * cosa;
+            if(first) ctx.moveTo(x1 * r + definition/2, y1 * r + definition/2 );
+            else ctx.lineTo(x1 * r + definition/2, y1 * r + definition/2);
+            first = false;
+        }
+        let [x0, y0] = shape[0];
+        let x1 = x0 * cosa + y0 * sina, y1 = - x0 * sina + y0 * cosa;
+        ctx.lineTo(x1 * r + definition/2, y1 * r + definition/2);
+        ctx.fill();
+    }
+    
+    let s1 = [ [-sqrt3 / 2 - 0.1, 0.5], [-0.6, 0], [-sqrt3/2 - 0.1, -0.5], [-sqrt3/2 - 0.1, -0.3], [-0.75, 0], [-sqrt3/2 - 0.1, 0.3], [-sqrt3/2 - 0.1, 0.5] ];
+    let s2 = [ [-sqrt3 / 2 + 0.1, 0.5], [(-3 - sqrt3)/10, 0.1], [1, 0.1], [1, 0.23], [(-3-sqrt3)/10 + 0.07, 0.23], [-sqrt3/2 + 0.26, 0.5], [-sqrt3/2 + 0.1, 0.5] ];
+    ctx.fillStyle = color;
+    draw_shape(s1);
+    draw_shape(s2);
+    draw_shape(s2, -1);
+}
+
+let draw_simplified_bind = function(r, angle, color="#FFFFFF"){
+    let cosa = Math.cos(angle), sina = Math.sin(angle);
+    let sqrt3 = Math.sqrt(3);
+
+    function draw_shape(shape, scale_y = 1){
+        let first = true;
+        ctx.beginPath();
+        for(let [x0, y0] of shape){
+            let x1 = x0 * cosa + scale_y * y0 * sina, y1 = - x0 * sina + scale_y * y0 * cosa;
+            if(first) ctx.moveTo(x1 * r + definition/2, y1 * r + definition/2 );
+            else ctx.lineTo(x1 * r + definition/2, y1 * r + definition/2);
+            first = false;
+        }
+        let [x0, y0] = shape[0];
+        let x1 = x0 * cosa + y0 * sina, y1 = - x0 * sina + y0 * cosa;
+        ctx.lineTo(x1 * r + definition/2, y1 * r + definition/2);
+        ctx.fill();
+    }
+
+    let s1 = [ [-sqrt3/2 - 0.1, 0.2], [1, 0.2], [1, -0.2], [-sqrt3/2 - 0.1, -0.2] ];
+    ctx.fillStyle = color;
+    draw_shape(s1);
+}
+
+function draw_logo(){
+    canvas = document.createElement("canvas");
+
+    canvas.width = definition;
+    canvas.height = definition;
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, definition, definition);
+	let factor = 3 * definition / 1600;
+    if(definition >= 32)
+        draw_gear(factor * 190, factor * 255, 10, 0.2, "#000000");
+    draw_gear(factor * 180, factor * 240, 10, 0.1, "#FFFFFF");
+	draw_gear(factor * 170, factor * 230, 10);
+    if(definition >= 32)
+	    draw_bind(factor * 130, 0.24);
+    else
+        draw_simplified_bind(factor * 130, 0.24);
+}
+
+definition = 1024;
+draw_logo();
+definition = 512;
+draw_logo();
+definition = 256;
+draw_logo();
+definition = 128;
+draw_logo();
+definition = 64;
+draw_logo();
+definition = 32;
+draw_logo();
+definition = 16;
+draw_logo();
+
+</script>
