@@ -40,6 +40,7 @@ class Component {
 
 		subobject.add_component = function(...args){ return this.component.add_component(...args); }
 		subobject.set_position_and_scale = function(...args){ return this.component.set_position_and_scale(...args); }
+		subobject.cascade_apply = function(...args){ return this.component.cascade_apply(...args); }
 		subobject.deep_copy = function(){
 			let tmp = copy_func(this, true);
 			for(let child of subobject.children){
@@ -137,6 +138,11 @@ class Component {
 	get cascade_transform(){
 		let p = this.parent === null ? new LinearTransform() : this.parent.cascade_transform;
 		return p.mult(this.transform);
+	}
+
+	cascade_apply(vec){
+		let p = this.transform.apply(vec);
+		return this.parent === null ? p : this.parent.cascade_apply(p);
 	}
 
 	set position(p){

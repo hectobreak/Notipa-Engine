@@ -87,9 +87,16 @@ class Sprite {
 			sprite_height: this.dimensions.y,
 			width: this.dimensions.x * this.num_cols,
 			height: this.dimensions.y * this.num_rows,
-			texture: tex,
 			model_matrix: this.transform.mult(new LinearTransform(new Vector3D(), this.dimensions)).transform_transpose,
-			texture_matrix: this.texture_matrix
+			texture_matrix: this.texture_matrix,
+			ka: 1,
+			kd: 0,
+			ks: 0,
+			shiny: 80,
+			ambient: new Vector3D(1, 1, 1),
+			texture: tex,
+			diffuse: new Vector3D(1, 1, 1),
+			specular: new Vector3D(1, 1, 1)
 		};
 		gl.bindTexture(gl.TEXTURE_2D, this.#texture_info.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.img);

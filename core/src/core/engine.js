@@ -48,7 +48,7 @@ class Engine {
 
 		function sort_by_depth(list){
 			let key = function(object) {
-				let pos = object.cascade_transform.apply(new Vector3D(0, 0, 0));
+				let pos = object.cascade_apply(new Vector3D(0, 0, 0));
 				return Engine.singleton.screen.camera.camera_transform.apply(pos).z;
 			}
 

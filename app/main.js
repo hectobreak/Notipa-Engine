@@ -9,6 +9,7 @@ let s1 = Sprite.from_sprite_sheet(
     2,
     (sprite) => { sprite.center_origin() }
 );
+s1.rotation = Quaternion.fromEulerAngles(0, Math.PI, 0);
 s1.position = new Vector3D(0, 0, 126);
 test_instance.component.add_component(s1);
 
@@ -37,7 +38,7 @@ let s4 = Sprite.from_sprite_sheet(
     2,
     (sprite) => { sprite.center_origin() }
 );
-s4.rotation = Quaternion.fromEulerAngles(0, Math.PI/2, 0);
+s4.rotation = Quaternion.fromEulerAngles(0, -Math.PI/2, 0);
 s4.position = new Vector3D(126, 0, 0);
 test_instance.component.add_component(s4);
 
@@ -47,7 +48,7 @@ let s5 = Sprite.from_sprite_sheet(
     2,
     (sprite) => { sprite.center_origin() }
 );
-s5.rotation = Quaternion.fromEulerAngles(0, 0, Math.PI/2);
+s5.rotation = Quaternion.fromEulerAngles(0, 0, -Math.PI/2);
 s5.position = new Vector3D(0, -126, 0);
 test_instance.component.add_component(s5);
 
