@@ -3,61 +3,39 @@ let engine = new Engine(800, 600);
 
 let test_instance = new Instance();
 
+let click_box = Clickbox3D.fromQuad(256, 256, new Vector3D(128, 128, 0));
+
 let s1 = Sprite.from_sprite_sheet(
     "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
     1,
     2,
     (sprite) => { sprite.center_origin() }
 );
+s1.add_component(click_box);
 s1.rotation = Quaternion.fromEulerAngles(0, Math.PI, 0);
 s1.position = new Vector3D(0, 0, 126);
 test_instance.component.add_component(s1);
 
-let s2 = Sprite.from_sprite_sheet(
-    "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
-    1,
-    2,
-    (sprite) => { sprite.center_origin() }
-);
+let s2 = s1.deep_copy();
 s2.position = new Vector3D(0, 0, -126);
 test_instance.component.add_component(s2);
 
-let s3 = Sprite.from_sprite_sheet(
-    "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
-    1,
-    2,
-    (sprite) => { sprite.center_origin() }
-);
+let s3 = s1.deep_copy();
 s3.rotation = Quaternion.fromEulerAngles(0, Math.PI/2, 0);
 s3.position = new Vector3D(-126, 0, 0);
 test_instance.component.add_component(s3);
 
-let s4 = Sprite.from_sprite_sheet(
-    "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
-    1,
-    2,
-    (sprite) => { sprite.center_origin() }
-);
+let s4 = s1.deep_copy();
 s4.rotation = Quaternion.fromEulerAngles(0, -Math.PI/2, 0);
 s4.position = new Vector3D(126, 0, 0);
 test_instance.component.add_component(s4);
 
-let s5 = Sprite.from_sprite_sheet(
-    "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
-    1,
-    2,
-    (sprite) => { sprite.center_origin() }
-);
+let s5 = s1.deep_copy();
 s5.rotation = Quaternion.fromEulerAngles(0, 0, -Math.PI/2);
 s5.position = new Vector3D(0, -126, 0);
 test_instance.component.add_component(s5);
 
-let s6 = Sprite.from_sprite_sheet(
-    "https://cdn.discordapp.com/attachments/342608530236375040/1123983846963159082/image.png",
-    1,
-    2,
-    (sprite) => { sprite.center_origin() }
-);
+let s6 = s1.deep_copy();
 s6.rotation = Quaternion.fromEulerAngles(0, 0, Math.PI/2);
 s6.position = new Vector3D(0, 126, 0);
 test_instance.component.add_component(s6);
@@ -111,9 +89,16 @@ test_instance.step = function(){
 
 test_instance.on_key_down = function(key){
     if(key === 'LeftClick'){
-        let dx = engine.mouseX - this.position.x;
-        let dy = engine.mouseY - this.position.y;
-        if( dx * dx + dy * dy <= 128 * 128 )
+        let is_clicking = false;
+        let clickers = this.get_components(Sprite).map(x => x.get_component(Clickbox3D));
+        for(let clicker of clickers){
+            clicker.project();
+            if(clicker.is_clicking()){
+                is_clicking = true;
+                break;
+            }
+        }
+        if( is_clicking )
             for(let sprite of this.get_components(Sprite)){
                 sprite.image_index += 1;
                 this.speed = this.speed.add(new Vector3D(Math.random() * 400 - 200, Math.random() * 400 - 200, 0));
@@ -134,6 +119,7 @@ let test_text = new TextImage("Hello World!\nGoodbye World!");
 test_text.position.x = 100;
 test_text.position.y = 100;
 let test_textinstance = engine.instantiate(test_text);
+
 
 // test_instance.position = new Vector3D(600, 300, 0);
 // test_instance.get_component(Sprite).image_index += 1;

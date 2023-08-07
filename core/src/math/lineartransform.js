@@ -311,7 +311,7 @@ LinearTransform.det4v4 = function(a11, a12, a13, a14,
 LinearTransform.transpose_adjugate2v2 = function(a11, a12,
                                                  a21, a22){
     // Returns the transpose adjugate of a 2 x 2 matrix
-    return [a22, -a21, -a12, a11];
+    return [a22, -a12, -a21, a11];
 }
 
 LinearTransform.transpose_adjugate3v3 = function(a11, a12, a13,

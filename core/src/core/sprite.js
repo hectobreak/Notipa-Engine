@@ -19,7 +19,10 @@ class Sprite {
 
 		this.deep_copy = () => {
 			let tmp = new Image(image, origin, position, scale, parent_object);
-			tmp.transform = this.transform;
+			tmp.transform = this.transform.copy();
+			for(let child of this.children){
+				tmp.add_component(child.deep_copy());
+			}
 			return tmp;
 		}
 
@@ -156,7 +159,10 @@ Sprite.from_sprite_sheet = function(image, num_rows, num_columns, callback=null,
 	img.deep_copy = function (){
 		let tmp = Sprite.from_sprite_sheet(image, num_rows, num_columns, callback, ...args);
 		tmp.image_index = img.image_index;
-		tmp.transform = img.transform;
+		tmp.transform = img.transform.copy();
+		for(let child of img.children){
+			tmp.add_component(child.deep_copy());
+		}
 		return tmp;
 	}
 	return img;

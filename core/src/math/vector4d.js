@@ -121,4 +121,8 @@ class Vector4D {
     copy(){
         return new Vector4D(this.x, this.y, this.z, this.w);
     }
+
+    get projected(){
+        return new Vector3D(this.x/this.w, this.y/this.w, this.z/this.w);
+    }
 }

@@ -54,8 +54,10 @@ load_js_files(core_path, function(core_files) {
 function main(){
     const { app, BrowserWindow } = require('electron');
     const createWindow = () => {
-        const win = new BrowserWindow(JSON.parse(fs.readFileSync(app_descriptor)));
-        win.setMenu(null);
+        let desc = JSON.parse(fs.readFileSync(app_descriptor));
+        const win = new BrowserWindow(desc);
+        if(desc["SETTING[setMenu]"] !== undefined)
+            win.setMenu(desc["SETTING[setMenu]"]);
         win.loadFile('index.html');
     }
 
