@@ -3,5 +3,5 @@
   "height": 600,
   "title": "Notipa Engine",
   "icon": "icons/icon.ico",
-  "#SETTING[setMenu]": null
+  "SETTING[setMenu]": null
 }
