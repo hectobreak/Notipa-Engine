@@ -91,9 +91,11 @@ class Screen {
 		this.context.bindBuffer(this.context.ARRAY_BUFFER, this.quad_texcoord_buffer);
 		this.context.bufferData(this.context.ARRAY_BUFFER, new Float32Array(quad_texcoords), this.context.STATIC_DRAW);
 
-		this.camera = new Camera(CameraTypes.Orthographic);
-
 		this.set_light_pos(new Vector3D(400, 300, -100000));
+	}
+
+	get camera(){
+		return Engine.singleton.scene.active_camera;
 	}
 
 	set_light_pos(pos){
@@ -159,7 +161,7 @@ class Screen {
 		this.context.vertexAttribPointer(this.texcoordLocation, 2, this.context.FLOAT, false, 0, 0);
 
 		// this matrix will convert from pixels to clip space
-		let transform = this.camera.camera_transform;
+		let transform = this.camera.camera_transform.mult(this.camera.cascade_transform.inverse);
 		this.context.uniformMatrix4fv(this.matrixLocationCam, false, new Float32Array(transform.matrix));
 
 		// this matrix will translate and scale our object

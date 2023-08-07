@@ -28,7 +28,7 @@ class Clickbox3D {
     }
 
     // Projects the vertices to clip space
-    project(projection=Engine.singleton.screen.camera.camera_transform){
+    project(projection=Engine.singleton.screen.camera.camera_transform.mult(Engine.singleton.screen.camera.cascade_transform.inverse)){
         this.#projected_triangles = new Array(this.#triangles.length);
         for(let i = 0; i < this.#triangles.length; ++i){
             let [p1, p2, p3] = this.#triangles[i];
@@ -54,9 +54,7 @@ class Clickbox3D {
 
             // Detect if the point is outside the clip space
             let z = - (constant + normal.x * x + normal.y * y) / normal.z;
-            if(z < 0 || z > 1) {
-                continue;
-            }
+            if(z < 0 || z > 1) continue;
 
             // Detect if the point is inside the triangle
             let matrix = [q2.x - q1.x, q3.x - q1.x, q2.y - q1.y, q3.y - q1.y];
@@ -67,9 +65,7 @@ class Clickbox3D {
             let s = m[0] * (x - q1.x) + m[1] * (y - q1.y);
             let t = m[2] * (x - q1.x) + m[3] * (y - q1.y);
 
-            if(s >= 0 && t >= 0 && s + t <= 1) {
-                return true;
-            }
+            if(s >= 0 && t >= 0 && s + t <= 1) return true;
         }
         return false;
     }
